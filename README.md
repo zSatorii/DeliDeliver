@@ -10,12 +10,12 @@
 
 ## 📋 Tabla de contenidos
 
-- [Descripcion](#-Descripcion)
+- [Descripcion](#-descripcion)
 - [Caracteristicas](#-caracteristicas)
-- [Instalacion](#-Instalacion)
-- [Arquitectura](#-Arquitectura)
+- [Instalacion](#-instalacion)
+- [Arquitectura](#-arquitectura)
 
-## Descripcion
+## 📦 Descripcion
 **DeliDeliver** Es una plataforma de delivery diseñada en Django con una adicion de Firebase Permite a usuarios y empresas registrar pedidos, gestionar menús y repartidores manejar entregas en tiempo real.
 
 El sistema cuenta con Dos roles principales: **Cliente**, **Empresa**, cada uno con su propio panel de control (Dashboard)
@@ -24,7 +24,7 @@ El sistema cuenta con Dos roles principales: **Cliente**, **Empresa**, cada uno 
 - 🔐 **Autenticación** — Registro, login y manejo de sesiones con Firebase
 - 🛠️ **Panel de administración** — Dashboard / Panel de control
 
-## Instalacion
+## 🚀 Instalacion
 ```
 1.Clona el repositorio :
 Con el comando git clone https://github.com/tu-usuario/delideliver.git
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 4.
 ```
-## Arquitectura
+## 🏗️ Arquitectura
 
 ```
 delideliver/
