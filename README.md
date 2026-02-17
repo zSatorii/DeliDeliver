@@ -13,7 +13,7 @@
 - [Descripcion](#-Descripcion)
 - [Caracteristicas](#-caracteristicas)
 - [Instalacion](#-Instalacion)
-- [Arquitectura](#-arquitectura)
+- [Arquitectura](#-Arquitectura)
 
 ## Descripcion
 **DeliDeliver** Es una plataforma de delivery diseñada en Django con una adicion de Firebase Permite a usuarios y empresas registrar pedidos, gestionar menús y repartidores manejar entregas en tiempo real.
