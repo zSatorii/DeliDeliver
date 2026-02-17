@@ -1,13 +1,31 @@
+# 🛵 DeliDeliver
+
+> Delideliver es una plataforma de delivery de comida y productos, desarrollada con Django.
 
 [![Django](https://img.shields.io/badge/Django-4.2+-green.svg)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![Firebase](https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/?hl=es-419)
 
-# DeliDeliver
+---
 
-Delideliver es una plataforma de delivery de comida y productos inspirada en Rappi, desarrollada con Django. Permite a usuarios registrar pedidos, restaurantes gestionar menús y repartidores manejar entregas en tiempo real.[web:20][web:23]
+## 📋 Tabla de contenidos
+
+- [Descripcion](#-Descripcion)
+- [Caracteristicas](#-caracteristicas)
+- [Instalacion](#-Instalacion)
+- [Arquitectura](#-arquitectura)
+
+## Descripcion
+**DeliDeliver** Es una plataforma de delivery diseñada en Django con una adicion de Firebase Permite a usuarios y empresas registrar pedidos, gestionar menús y repartidores manejar entregas en tiempo real.
+
+El sistema cuenta con Dos roles principales: **Cliente**, **Empresa**, cada uno con su propio panel de control (Dashboard)
+
+## ✨ Caracteristicas
+- 🔐 **Autenticación** — Registro, login y manejo de sesiones con Firebase
+- 🛠️ **Panel de administración** — Dashboard / Panel de control
 
 ## Instalacion
+```
 1.Clona el repositorio :
 Con el comando git clone https://github.com/tu-usuario/delideliver.git
 
@@ -20,3 +38,20 @@ venv\Scripts\activate # Windows
 pip install -r requirements.txt
 
 4.
+```
+## Arquitectura
+
+```
+delideliver/
+├── delideliver/
+│   ├── firebase_config.py          # Es la configuracion del firebase 
+│   ├── setting.py         # La configuracion de Django
+│   ├── urls.py       # Urls de Django
+├── interfaz/             # Configuración del proyecto 
+│   ├── templates/          # Son las Templates del proyecto
+│   ├── urls.py             # Son las urls de la app 
+│   ├── views.py            # Son las vistas del proyecto 
+├── README.md
+├── requirements.txt
+└── manage.py
+```
