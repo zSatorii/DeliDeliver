@@ -65,7 +65,17 @@ delideliver/
 └── manage.py
 ```
 
+### 💫 Descripción de capas
+
+| Capa | Tecnología | Responsabilidad |
+|------|-----------|-----------------|
+| Presentación | Django Templates | Renderiza las vistas del cliente y empresa |
+| Lógica | Django Views | Procesa peticiones y reglas del negocio |
+| Autenticación | Firebase Auth | Registro, login y manejo de sesiones |
+| Base de datos | Firestore (NoSQL) | Almacenamiento de colecciones |
+
 ---
+
 
 ## ⌛ Cronograma
 
@@ -77,8 +87,10 @@ delideliver/
 
 ---
 
-## Capturas de pantalla
+## 🎞️ Capturas de pantalla de la Colecciones
 ![FireBases Coleccion](assets/Coleccion.jpeg)
+
+---
 
 ## 🖥️ Urls
 
