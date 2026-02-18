@@ -292,7 +292,30 @@ def articulo(request):
     except Exception as e:
         messages.error(request, f"❌Hubo un error al obtener los artículos {e}")
     return render(request, 'articulos/listar.html', {'articulos' : articulos})
-    
+
+@login_required_firebase
+def gestion_articulos(request):
+    uid = request.session.get('uid')
+    datos_usuario = {}
+
+    try:
+        #  Consultar firestore usando el SDK admin
+        doc_ref = db.collection('empresas').document(uid)
+        doc = doc_ref.get()
+
+        if doc.exists:
+            datos_usuario = doc.to_dict()
+        else: 
+            # Si entra en el auth pero no tiene un perfil en firestore, manejo el caso
+            datos_usuario = {
+                'email' : request.session.get('email'),
+                'uid' : request.session.get('uid'),
+                'rol' : request.session.get('rol'),
+                'fecha_registro' : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+    except Exception as e:
+        messages.error(request, f"Error al cargar los datos de la BD: (e)")
+    return render(request, 'articulos/base.html', {'datos': datos_usuario})
 
 @login_required_firebase
 def crear_articulo(request):

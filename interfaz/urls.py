@@ -11,7 +11,8 @@ urlpatterns = [
     path('cerrar_sesion/', views.cerrar_sesion, name='cerrar_sesion'),
 
     # vendedores de los artículos
-    path('articulos/', views.articulo, name='listar_articulos'),
+    path('articulos/', views.gestion_articulos, name='gestion_articulos'),
+    path('articulos_lista/', views.articulo, name='listar_articulos'),
     path('articulos/crear/', views.crear_articulo, name='crear_articulo'),
     path('articulos/editar/<str:articulo_id>/', views.editar_articulo, name='editar_articulo'),
     path('articulos/eliminar/<str:articulo_id>/', views.eliminar_Venta, name='eliminar_articulo'),
