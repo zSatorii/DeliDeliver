@@ -95,6 +95,9 @@ delideliver/
 | `DashBoard` | 4 Horas |
 | `CRUD` | 5 Horas |
 
+`Pablo` Se encargo de las urls, redirecciones del dashboard, login y register
+`Santiago` Se encargo de el CRUD
+`Johan` Se encargo del README.md, las templates y conexiones de urls
 ---
 
 ## 🎞️ Capturas de pantalla de la Colecciones
