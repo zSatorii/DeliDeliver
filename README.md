@@ -79,6 +79,13 @@ delideliver/
 
 ---
 
+### Comunicación entre servicios
+- Django se comunica con Firebase a través del SDK `firebase-admin`
+- La configuración de la conexión se centraliza en `firebase_config.py`
+- Firestore actúa como base de datos principal en tiempo real
+
+---
+
 
 ## ⌛ Cronograma
 
