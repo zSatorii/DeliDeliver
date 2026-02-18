@@ -1,0 +1,12 @@
+<h2>Registrar Comprador</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="nombre" placeholder="Nombre" required><br><br>
+    <input type="email" name="correo" placeholder="Correo" required><br><br>
+    <input type="text" name="telefono" placeholder="Teléfono"><br><br>
+    <input type="text" name="direccion" placeholder="Dirección"><br><br>
+
+    <button type="submit">Guardar</button>
+</form>

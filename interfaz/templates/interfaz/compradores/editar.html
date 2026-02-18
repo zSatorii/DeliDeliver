@@ -1,0 +1,12 @@
+<h2>Editar Comprador</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="nombre" value="{{ comprador.nombre }}"><br><br>
+    <input type="email" name="correo" value="{{ comprador.correo }}"><br><br>
+    <input type="text" name="telefono" value="{{ comprador.telefono }}"><br><br>
+    <input type="text" name="direccion" value="{{ comprador.direccion }}"><br><br>
+
+    <button type="submit">Actualizar</button>
+</form>

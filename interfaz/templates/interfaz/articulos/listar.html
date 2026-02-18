@@ -1,0 +1,19 @@
+<h2>Lista de Artículos</h2>
+
+<a href="{% url 'crear_articulo' %}">➕ Crear Artículo</a>
+
+<hr>
+
+{% for articulo in articulos %}
+    <div>
+        <p><strong>{{ articulo.nomArticulo }}</strong></p>
+        <p>{{ articulo.descripcion }}</p>
+        <p>{{ articulo.estado }}</p>
+
+        <a href="{% url 'editar_articulo' articulo.id %}">✏ Editar</a>
+        <a href="{% url 'eliminar_articulo' articulo.id %}">❌ Eliminar</a>
+    </div>
+    <hr>
+{% empty %}
+    <p>No hay artículos</p>
+{% endfor %}

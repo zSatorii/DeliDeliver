@@ -1,0 +1,14 @@
+<h2>Editar Artículo</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="nomArticulo" value="{{ articulo.nomArticulo }}"><br><br>
+    <input type="text" name="descripcion" value="{{ articulo.descripcion }}"><br><br>
+    <input type="text" name="estado" value="{{ articulo.estado }}"><br><br>
+    <input type="text" name="dirEmpresa" value="{{ articulo.dirEmpresa }}"><br><br>
+    <input type="number" name="descuento" value="{{ articulo.descuento }}"><br><br>
+    <input type="number" name="total" value="{{ articulo.Total }}"><br><br>
+
+    <button type="submit">Actualizar</button>
+</form>
