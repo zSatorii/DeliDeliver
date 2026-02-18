@@ -72,14 +72,13 @@ delideliver/
 | Tarea | Tiempo aproximado |
 |-----|-------------|
 | `Login` | 4 Horas |
-| `Register` | 4 Horas |
 | `DashBoard` | 4 Horas |
-| `Documentacion` | 2 Horas |
 | `CRUD` | 5 Horas |
 
-
-
 ---
+
+## Capturas de pantalla
+![FireBases Coleccion](assets/Coleccion.JPEG)
 
 ## 🖥️ Urls
 
