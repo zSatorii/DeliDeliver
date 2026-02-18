@@ -1,0 +1,29 @@
+<h2>📦 Mis Pedidos</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<a href="{% url 'crear_pedido' %}">➕ Nuevo Pedido</a>
+
+<hr>
+
+{% for pedido in pedidos %}
+
+    <div style="border:1px solid gray; padding:10px; margin:10px;">
+        <p><strong>Producto:</strong> {{ pedido.nomArticulo }}</p>
+        <p><strong>Cantidad:</strong> {{ pedido.cantidad }}</p>
+        <p><strong>Total:</strong> ${{ pedido.total }}</p>
+        <p><strong>Dirección:</strong> {{ pedido.direccion }}</p>
+        <p><strong>Pago:</strong> {{ pedido.metodo_pago }}</p>
+        <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+
+        <a href="{% url 'editar_pedido' pedido.id %}">✏ Editar</a>
+        <a href="{% url 'eliminar_pedido' pedido.id %}">🗑 Eliminar</a>
+    </div>
+
+{% empty %}
+    <p>No tienes pedidos aún.</p>
+{% endfor %}

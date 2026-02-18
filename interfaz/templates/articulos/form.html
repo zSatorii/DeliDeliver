@@ -1,0 +1,13 @@
+<h2>Crear Artículo</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="nomArticulo" placeholder="Nombre" required><br><br>
+    <input type="text" name="descripcion" placeholder="Descripción" required><br><br>
+    <input type="text" name="dirEmpresa" placeholder="Dirección Empresa"><br><br>
+    <input type="number" name="descuento" placeholder="Descuento"><br><br>
+    <input type="number" name="total" placeholder="Total"><br><br>
+
+    <button type="submit">Guardar</button>
+</form>

@@ -8,6 +8,7 @@ import requests
 import os
 from datetime import datetime
 
+
 def home(request):
     return render(request, 'main.html')
 
@@ -267,3 +268,416 @@ def dashboard_cliente(request):
     except Exception as e:
         messages.error(request, f"Error al cargar los datos de la BD: (e)")
     return render(request, 'dashboarduser.html', {'datos': datos_usuario})
+
+
+# CRUD para los artículos/Productos de las empresas/vendedores en el delivery
+
+def articulo(request):
+
+    """
+    READ: 
+    """
+
+    uid = request.session.get('uid')
+    articulos = []
+
+    try:
+        #Filtrar por el uid del usuario
+        docs = db.collection('articulos').where()
+        for doc in docs:
+            articulo = doc.to_dict()
+            articulo['id'] = doc.id
+            articulos.append(articulo)
+    except Exception as e:
+        messages.error(request, f"❌Hubo un error al obtener los artículos {e}")
+    return render(request, 'articulos/listar.html', {'articulos' : articulos})
+    
+
+def crear_articulo(request):
+    """
+    CREATE: Recibimos los datos del formulario anterior y lo almacenamos según la info del artículo
+    """
+    if (request.method == 'POST'):
+        nomArticulo = request.POST.get('nomArticulo')
+        descripcion = request.POST.get('descripcion')
+        dirEmpresa = request.POST.get('dirEmpresa')
+        descuento = request.POST.get('descuento')
+        total = request.POST.get('total')
+        uid = request.session.get('uid')
+
+        try:
+            db.collection('articulos').add({
+                'nomArticulo' : nomArticulo,
+                'descripcion': descripcion,
+                'estado' : 'Unidades disponibles',
+                'dirEmpresa' : dirEmpresa,
+                'descuento' : descuento,
+                'Total' : total,
+                'usuario_id' : uid,
+                'fecha_creacion' : firestore.SERVER_TIMESTAMP
+            })
+            messages.success(request, "✅Artículo a comercializar añadido con éxito")
+        except Exception as e:
+            messages.error(request, f"Eror al añadir el artículo {e}")
+    return render(request, 'articulos/form.html')
+    
+
+def eliminar_Venta(request, articulo_id):
+    """
+    DELETE: Eliminar artículos
+    """
+    uid = request.session.get('uid')
+
+    try:
+        # Referencia al documento
+        articulo_ref = db.collection('articulos').document(articulo_id)
+        articulo = articulo_ref.get()
+
+        # Verificamos que exista
+        if not articulo.exists:
+            messages.error(request, "❌El artículo no existe o no fue añadido.")
+            return redirect('listar_articulos')
+
+        # Verificamos que el artículo pertenezca a la empresa/vendedor
+        if articulo.to_dict().get('usuario_id') != uid:
+            messages.error(request, "❌No tienes permiso para eliminar este artículo.")
+            return redirect('listar_articulos')
+
+        # Eliminamos la tarea
+        articulo_ref.delete()
+        messages.success(request, "✅🤑Artículo eliminado correctamente.")
+
+    except Exception as e:
+        messages.error(request, f"❌Error al eliminar el artículo: {e}")
+
+    return redirect('listar_articulos')
+
+
+def editar_articulo(request, articulo_id):
+    """
+    UPDATE: Va a recuperar los datos de la tarea especifica y actualiza los campos en Firebase
+    """
+    uid = request.session.get('uid')
+    articulo_ref = db.collection('articulos').document(articulo_id)
+
+    try:
+        doc = articulo_ref.get()
+        if not doc.exists:
+            messages.error(request, "El artículo no existe")
+            return redirect('listar_articulos')
+        articulo_data = doc.to_dict()
+        if articulo_data.get('usuario_id') != uid:
+            messages.error(request, "❌No tienes permiso para editar la información de este producto")
+            return redirect('listar_articulos')
+
+        if request.method == 'POST':
+            nuevo_nomArticulo = request.POST.get('nomArticulo')
+            nueva_descripcion = request.POST.get('descripcion')
+            nuevo_estado = request.POST.get('estado')
+            nueva_dirEmpresa = request.POST.get('dirEmpresa')
+            nuevo_desc = request.POST.get('descuento')
+            nuevo_Total = request.POST.get('total')
+
+            articulo_ref.update({
+                'nomArticulo' : nuevo_nomArticulo,
+                'descripcion' : nueva_descripcion,
+                'estado' : nuevo_estado,
+                'dirEmpresa' : nueva_dirEmpresa,
+                'nuevo_desc' : nuevo_desc,
+                'nuevo_total' : nuevo_Total,
+                'fecha_actualizacion' : firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅🤑Artículo actualizado correctamente")
+            return redirect('listar_articulos')
+    except Exception as e:
+        messages.error(request, f"❌Error al editar el artículo: {e}")
+        return redirect('listar_articulos')
+    return render(request, 'articulos/editar.html', {
+        'articulo': articulo_data, 
+        'id': articulo_id})
+
+
+"""
+CRUD CLIENTE:
+
+READ: El cliente va a confirmar los articulos a comprar y se va a mandar al firebase
+"""
+
+
+def listar_compradores(request):
+
+    compradores = []
+
+    try:
+        docs = db.collection('compradores').stream()
+
+        for doc in docs:
+            comprador = doc.to_dict()
+            comprador['id'] = doc.id
+            compradores.append(comprador)
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al obtener compradores: {e}")
+
+    return render(request, 'compradores/listar.html', {
+        'compradores': compradores
+    })
+
+"""
+CREATE: Recibimos los datos del formulario anterior y lo almacenamos según la info del artículo
+"""
+
+def crear_comprador(request):
+
+    if request.method == 'POST':
+
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('correo')
+        telefono = request.POST.get('telefono')
+        direccion = request.POST.get('direccion')
+        uid = request.session.get('uid')
+
+        try:
+            db.collection('compradores').add({
+                'nombre': nombre,
+                'correo': correo,
+                'telefono': telefono,
+                'direccion': direccion,
+                'usuario_id': uid,
+                'fecha_creacion': firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅ Comprador registrado correctamente")
+            return redirect('listar_compradores')
+
+        except Exception as e:
+            messages.error(request, f"❌ Error al crear comprador: {e}")
+
+    return render(request, 'compradores/form.html')
+
+"""
+UPDATE CLIENTE:
+"""
+
+def editar_comprador(request, comprador_id):
+
+    comprador_ref = db.collection('compradores').document(comprador_id)
+
+    try:
+        doc = comprador_ref.get()
+
+        if not doc.exists:
+            messages.error(request, "❌ El comprador no existe")
+            return redirect('listar_compradores')
+
+        comprador_data = doc.to_dict()
+
+        if request.method == 'POST':
+
+            nuevo_nombre = request.POST.get('nombre')
+            nuevo_correo = request.POST.get('correo')
+            nuevo_telefono = request.POST.get('telefono')
+            nueva_direccion = request.POST.get('direccion')
+
+            comprador_ref.update({
+                'nombre': nuevo_nombre,
+                'correo': nuevo_correo,
+                'telefono': nuevo_telefono,
+                'direccion': nueva_direccion,
+                'fecha_actualizacion': firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅ Comprador actualizado correctamente")
+            return redirect('listar_compradores')
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al editar comprador: {e}")
+        return redirect('listar_compradores')
+
+    return render(request, 'compradores/editar.html', {
+        'comprador': comprador_data,
+        'id': comprador_id
+    })
+
+"""
+DELETE CLIENTE:
+"""
+
+def eliminar_comprador(request, comprador_id):
+
+    comprador_ref = db.collection('compradores').document(comprador_id)
+
+    try:
+        doc = comprador_ref.get()
+
+        if not doc.exists:
+            messages.error(request, "❌ El comprador no existe")
+            return redirect('listar_compradores')
+
+        comprador_ref.delete()
+
+        messages.success(request, "✅ Comprador eliminado correctamente")
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al eliminar comprador: {e}")
+
+    return redirect('listar_compradores')
+
+"""
+READ DE PEDIDOS:
+"""
+
+def listar_pedidos(request):
+
+    pedidos = []
+    uid = request.session.get('uid')
+
+    try:
+        docs = db.collection('pedidos').where('cliente_id', '==', uid).stream()
+
+        for doc in docs:
+            pedido = doc.to_dict()
+            pedido['id'] = doc.id
+            pedidos.append(pedido)
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al obtener pedidos: {e}")
+
+    return render(request, 'pedidos/listar.html', {
+        'pedidos': pedidos
+    })
+
+"""
+CREATE DE PEDIDOS
+"""
+
+def crear_pedido(request):
+
+    articulos = []
+
+    try:
+        docs = db.collection('articulos').stream()
+
+        for doc in docs:
+            articulo = doc.to_dict()
+            articulo['id'] = doc.id
+            articulos.append(articulo)
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al cargar artículos: {e}")
+
+    if request.method == 'POST':
+
+        articulo_id = request.POST.get('articulo')
+        cantidad = int(request.POST.get('cantidad'))
+        direccion = request.POST.get('direccion')
+        metodo_pago = request.POST.get('metodo_pago')
+        uid = request.session.get('uid')
+
+        try:
+            articulo_ref = db.collection('articulos').document(articulo_id)
+            articulo = articulo_ref.get()
+
+            if not articulo.exists:
+                messages.error(request, "❌ El artículo no existe")
+                return redirect('crear_pedido')
+
+            articulo_data = articulo.to_dict()
+            precio = float(articulo_data.get('Total', 0))
+
+            total = precio * cantidad
+
+            db.collection('pedidos').add({
+                'cliente_id': uid,
+                'articulo_id': articulo_id,
+                'nomArticulo': articulo_data.get('nomArticulo'),
+                'precio_unitario': precio,
+                'cantidad': cantidad,
+                'total': total,
+                'direccion': direccion,
+                'metodo_pago': metodo_pago,
+                'estado': 'Pendiente',
+                'fecha_creacion': firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅ Pedido realizado correctamente")
+            return redirect('listar_pedidos')
+
+        except Exception as e:
+            messages.error(request, f"❌ Error al crear pedido: {e}")
+
+    return render(request, 'pedidos/form.html', {
+        'articulos': articulos
+    })
+
+
+"""
+UPDATE DE PEDIDOS
+"""
+
+def editar_pedido(request, pedido_id):
+
+    pedido_ref = db.collection('pedidos').document(pedido_id)
+
+    try:
+        doc = pedido_ref.get()
+
+        if not doc.exists:
+            messages.error(request, "❌ El pedido no existe")
+            return redirect('listar_pedidos')
+
+        pedido_data = doc.to_dict()
+
+        if request.method == 'POST':
+
+            nueva_cantidad = int(request.POST.get('cantidad'))
+            nueva_direccion = request.POST.get('direccion')
+            nuevo_metodo_pago = request.POST.get('metodo_pago')
+
+            precio = float(pedido_data.get('precio_unitario', 0))
+            nuevo_total = precio * nueva_cantidad
+
+            pedido_ref.update({
+                'cantidad': nueva_cantidad,
+                'total': nuevo_total,
+                'direccion': nueva_direccion,
+                'metodo_pago': nuevo_metodo_pago,
+                'fecha_actualizacion': firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅ Pedido actualizado correctamente")
+            return redirect('listar_pedidos')
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al editar pedido: {e}")
+        return redirect('listar_pedidos')
+
+    return render(request, 'pedidos/editar.html', {
+        'pedido': pedido_data,
+        'id': pedido_id
+    })
+
+"""
+DELETE DE PEDIDOS
+"""
+
+def eliminar_pedido(request, pedido_id):
+
+    pedido_ref = db.collection('pedidos').document(pedido_id)
+
+    try:
+        doc = pedido_ref.get()
+
+        if not doc.exists:
+            messages.error(request, "❌ El pedido no existe")
+            return redirect('listar_pedidos')
+
+        pedido_ref.delete()
+
+        messages.success(request, "✅ Pedido eliminado correctamente")
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al eliminar pedido: {e}")
+
+    return redirect('listar_pedidos')
