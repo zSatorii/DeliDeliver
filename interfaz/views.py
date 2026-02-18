@@ -26,7 +26,6 @@ def login_required_firebase(view_func):
 
 # CRUD para los artículos/Productos de las empresas/vendedores en el delivery
 
-@login_required_firebase #Verifica que el usuario este logueado
 def articulo(request):
 
     """
@@ -47,7 +46,7 @@ def articulo(request):
         messages.error(request, f"❌Hubo un error al obtener los artículos {e}")
     return render(request, 'articulos/listar.html', {'articulos' : articulos})
     
-@login_required_firebase #Verifica que este logueado
+
 def crear_articulo(request):
     """
     CREATE: Recibimos los datos del formulario anterior y lo almacenamos según la info del artículo
@@ -76,7 +75,7 @@ def crear_articulo(request):
             messages.error(request, f"Eror al añadir el artículo {e}")
     return render(request, 'articulos/form.html')
     
-@login_required_firebase
+
 def eliminar_Venta(request, articulo_id):
     """
     DELETE: Eliminar artículos
@@ -107,7 +106,7 @@ def eliminar_Venta(request, articulo_id):
 
     return redirect('listar_articulos')
 
-@login_required_firebase
+
 def editar_articulo(request, articulo_id):
     """
     UPDATE: Va a recuperar los datos de la tarea especifica y actualiza los campos en Firebase
@@ -137,7 +136,7 @@ def editar_articulo(request, articulo_id):
                 'nomArticulo' : nuevo_nomArticulo,
                 'descripcion' : nueva_descripcion,
                 'estado' : nuevo_estado,
-                'nueva_dirEmpresa' : nueva_dirEmpresa,
+                'dirEmpresa' : nueva_dirEmpresa,
                 'nuevo_desc' : nuevo_desc,
                 'nuevo_total' : nuevo_Total,
                 'fecha_actualizacion' : firestore.SERVER_TIMESTAMP
@@ -159,7 +158,7 @@ CRUD CLIENTE:
 READ: El cliente va a confirmar los articulos a comprar y se va a mandar al firebase
 """
 
-@login_required_firebase
+
 def listar_compradores(request):
 
     compradores = []
@@ -183,7 +182,6 @@ def listar_compradores(request):
 CREATE: Recibimos los datos del formulario anterior y lo almacenamos según la info del artículo
 """
 
-@login_required_firebase
 def crear_comprador(request):
 
     if request.method == 'POST':
@@ -216,7 +214,6 @@ def crear_comprador(request):
 UPDATE CLIENTE:
 """
 
-@login_required_firebase
 def editar_comprador(request, comprador_id):
 
     comprador_ref = db.collection('compradores').document(comprador_id)
@@ -261,7 +258,6 @@ def editar_comprador(request, comprador_id):
 DELETE CLIENTE:
 """
 
-@login_required_firebase
 def eliminar_comprador(request, comprador_id):
 
     comprador_ref = db.collection('compradores').document(comprador_id)
@@ -281,3 +277,161 @@ def eliminar_comprador(request, comprador_id):
         messages.error(request, f"❌ Error al eliminar comprador: {e}")
 
     return redirect('listar_compradores')
+
+"""
+READ DE PEDIDOS:
+"""
+
+def listar_pedidos(request):
+
+    pedidos = []
+    uid = request.session.get('uid')
+
+    try:
+        docs = db.collection('pedidos').where('cliente_id', '==', uid).stream()
+
+        for doc in docs:
+            pedido = doc.to_dict()
+            pedido['id'] = doc.id
+            pedidos.append(pedido)
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al obtener pedidos: {e}")
+
+    return render(request, 'pedidos/listar.html', {
+        'pedidos': pedidos
+    })
+
+"""
+CREATE DE PEDIDOS
+"""
+
+def crear_pedido(request):
+
+    articulos = []
+
+    try:
+        docs = db.collection('articulos').stream()
+
+        for doc in docs:
+            articulo = doc.to_dict()
+            articulo['id'] = doc.id
+            articulos.append(articulo)
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al cargar artículos: {e}")
+
+    if request.method == 'POST':
+
+        articulo_id = request.POST.get('articulo')
+        cantidad = int(request.POST.get('cantidad'))
+        direccion = request.POST.get('direccion')
+        metodo_pago = request.POST.get('metodo_pago')
+        uid = request.session.get('uid')
+
+        try:
+            articulo_ref = db.collection('articulos').document(articulo_id)
+            articulo = articulo_ref.get()
+
+            if not articulo.exists:
+                messages.error(request, "❌ El artículo no existe")
+                return redirect('crear_pedido')
+
+            articulo_data = articulo.to_dict()
+            precio = float(articulo_data.get('Total', 0))
+
+            total = precio * cantidad
+
+            db.collection('pedidos').add({
+                'cliente_id': uid,
+                'articulo_id': articulo_id,
+                'nomArticulo': articulo_data.get('nomArticulo'),
+                'precio_unitario': precio,
+                'cantidad': cantidad,
+                'total': total,
+                'direccion': direccion,
+                'metodo_pago': metodo_pago,
+                'estado': 'Pendiente',
+                'fecha_creacion': firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅ Pedido realizado correctamente")
+            return redirect('listar_pedidos')
+
+        except Exception as e:
+            messages.error(request, f"❌ Error al crear pedido: {e}")
+
+    return render(request, 'pedidos/form.html', {
+        'articulos': articulos
+    })
+
+
+"""
+UPDATE DE PEDIDOS
+"""
+
+def editar_pedido(request, pedido_id):
+
+    pedido_ref = db.collection('pedidos').document(pedido_id)
+
+    try:
+        doc = pedido_ref.get()
+
+        if not doc.exists:
+            messages.error(request, "❌ El pedido no existe")
+            return redirect('listar_pedidos')
+
+        pedido_data = doc.to_dict()
+
+        if request.method == 'POST':
+
+            nueva_cantidad = int(request.POST.get('cantidad'))
+            nueva_direccion = request.POST.get('direccion')
+            nuevo_metodo_pago = request.POST.get('metodo_pago')
+
+            precio = float(pedido_data.get('precio_unitario', 0))
+            nuevo_total = precio * nueva_cantidad
+
+            pedido_ref.update({
+                'cantidad': nueva_cantidad,
+                'total': nuevo_total,
+                'direccion': nueva_direccion,
+                'metodo_pago': nuevo_metodo_pago,
+                'fecha_actualizacion': firestore.SERVER_TIMESTAMP
+            })
+
+            messages.success(request, "✅ Pedido actualizado correctamente")
+            return redirect('listar_pedidos')
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al editar pedido: {e}")
+        return redirect('listar_pedidos')
+
+    return render(request, 'pedidos/editar.html', {
+        'pedido': pedido_data,
+        'id': pedido_id
+    })
+
+"""
+DELETE DE PEDIDOS
+"""
+
+def eliminar_pedido(request, pedido_id):
+
+    pedido_ref = db.collection('pedidos').document(pedido_id)
+
+    try:
+        doc = pedido_ref.get()
+
+        if not doc.exists:
+            messages.error(request, "❌ El pedido no existe")
+            return redirect('listar_pedidos')
+
+        pedido_ref.delete()
+
+        messages.success(request, "✅ Pedido eliminado correctamente")
+
+    except Exception as e:
+        messages.error(request, f"❌ Error al eliminar pedido: {e}")
+
+    return redirect('listar_pedidos')
