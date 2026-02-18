@@ -14,6 +14,11 @@
 - [Caracteristicas](#-caracteristicas)
 - [Instalacion](#-instalacion)
 - [Arquitectura](#-arquitectura)
+- [Descripción de capas](#-Descripcióndecapas)
+- [Comunicación entre servicios](#-Comunicaciónentreservicios)
+- [Cronograma](#-Cronograma)
+- [Capturas de pantalla de la Colecciones](#-CapturasdepantalladelaColecciones)
+- [Urls](#-Urls)
 
 ---
 
