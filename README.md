@@ -103,6 +103,9 @@ delideliver/
 - `Pablo` Se encargo de las urls, redirecciones del dashboard, login y register
 - `Santiago` Se encargo de el CRUD
 - `Johan` Se encargo del README.md, las templates y conexiones de urls
+
+- https://docs.google.com/document/d/1G60BhlEu7GoH0Zhyj6iN29h58F43__BU6iaDsBVxW0Y/edit?usp=sharing
+
 ---
 
 ## 🎞️ Capturas de pantalla de la Colecciones
@@ -120,3 +123,4 @@ delideliver/
 | `http://localhost:8000///` |  |
 
 ---
+
