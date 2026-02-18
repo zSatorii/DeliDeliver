@@ -78,7 +78,7 @@ delideliver/
 ---
 
 ## Capturas de pantalla
-![FireBases Coleccion](assets/Coleccion.JPEG)
+![FireBases Coleccion](assets/Coleccion.jpeg)
 
 ## 🖥️ Urls
 
