@@ -43,7 +43,9 @@ venv\Scripts\activate # Windows
 # 3.Ahora instalaras dependencias : 
 pip install -r requirements.txt
 
-4.
+# 4.Ahora corre el server
+py manage.py runserver
+
 ```
 
 ---
@@ -64,6 +66,7 @@ delideliver/
 ├── requirements.txt
 └── manage.py
 ```
+---
 
 ### 💫 Descripción de capas
 
