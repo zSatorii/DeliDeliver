@@ -272,6 +272,7 @@ def dashboard_cliente(request):
 
 # CRUD para los artículos/Productos de las empresas/vendedores en el delivery
 
+@login_required_firebase
 def articulo(request):
 
     """
@@ -283,7 +284,7 @@ def articulo(request):
 
     try:
         #Filtrar por el uid del usuario
-        docs = db.collection('articulos').where()
+        docs = db.collection('articulos').stream()
         for doc in docs:
             articulo = doc.to_dict()
             articulo['id'] = doc.id
@@ -293,6 +294,7 @@ def articulo(request):
     return render(request, 'articulos/listar.html', {'articulos' : articulos})
     
 
+@login_required_firebase
 def crear_articulo(request):
     """
     CREATE: Recibimos los datos del formulario anterior y lo almacenamos según la info del artículo
@@ -322,6 +324,7 @@ def crear_articulo(request):
     return render(request, 'articulos/form.html')
     
 
+@login_required_firebase
 def eliminar_Venta(request, articulo_id):
     """
     DELETE: Eliminar artículos
@@ -353,6 +356,7 @@ def eliminar_Venta(request, articulo_id):
     return redirect('listar_articulos')
 
 
+@login_required_firebase
 def editar_articulo(request, articulo_id):
     """
     UPDATE: Va a recuperar los datos de la tarea especifica y actualiza los campos en Firebase
@@ -405,6 +409,7 @@ READ: El cliente va a confirmar los articulos a comprar y se va a mandar al fire
 """
 
 
+@login_required_firebase
 def listar_compradores(request):
 
     compradores = []
@@ -428,6 +433,7 @@ def listar_compradores(request):
 CREATE: Recibimos los datos del formulario anterior y lo almacenamos según la info del artículo
 """
 
+@login_required_firebase
 def crear_comprador(request):
 
     if request.method == 'POST':
@@ -460,6 +466,7 @@ def crear_comprador(request):
 UPDATE CLIENTE:
 """
 
+@login_required_firebase
 def editar_comprador(request, comprador_id):
 
     comprador_ref = db.collection('compradores').document(comprador_id)
@@ -504,6 +511,7 @@ def editar_comprador(request, comprador_id):
 DELETE CLIENTE:
 """
 
+@login_required_firebase
 def eliminar_comprador(request, comprador_id):
 
     comprador_ref = db.collection('compradores').document(comprador_id)
@@ -528,6 +536,7 @@ def eliminar_comprador(request, comprador_id):
 READ DE PEDIDOS:
 """
 
+@login_required_firebase
 def listar_pedidos(request):
 
     pedidos = []
@@ -552,6 +561,7 @@ def listar_pedidos(request):
 CREATE DE PEDIDOS
 """
 
+@login_required_firebase
 def crear_pedido(request):
 
     articulos = []
@@ -616,6 +626,7 @@ def crear_pedido(request):
 UPDATE DE PEDIDOS
 """
 
+@login_required_firebase
 def editar_pedido(request, pedido_id):
 
     pedido_ref = db.collection('pedidos').document(pedido_id)
@@ -662,6 +673,7 @@ def editar_pedido(request, pedido_id):
 DELETE DE PEDIDOS
 """
 
+@login_required_firebase
 def eliminar_pedido(request, pedido_id):
 
     pedido_ref = db.collection('pedidos').document(pedido_id)
