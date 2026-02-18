@@ -253,9 +253,6 @@ def dashboard_cliente(request):
         #  Consultar firestore usando el SDK admin
         doc_ref = db.collection('clientes').document(uid)
         doc = doc_ref.get()
-        if request.session.get('rol') != 'cliente':
-           messages.error(request, "Acceso denegado. Esta área es solo para empresas.")
-           return redirect('login_empresa')
 
         if doc.exists:
             datos_usuario = doc.to_dict()

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delideliver - ¡A comer!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --primary-light: #ff8c61;
+            --bg-body: #f8f9fd;
+            --white: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #a0a0a0;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            display: flex;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR EVOLUCIONADA */
+        .sidebar {
+            width: 80px;
+            height: 100vh;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0;
+            position: fixed;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.03);
+            z-index: 1000;
+        }
+
+        .sidebar:hover {
+            width: 220px;
+            align-items: flex-start;
+            padding-left: 20px;
+        }
+
+        .sidebar-item {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px 0;
+            border-radius: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .sidebar:hover .sidebar-item {
+            width: 180px;
+            justify-content: flex-start;
+            padding-left: 15px;
+            gap: 15px;
+        }
+
+        .sidebar-item span {
+            display: none;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sidebar:hover .sidebar-item span { display: block; }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        /* CONTENIDO */
+        .main-content {
+            margin-left: 80px;
+            flex: 1;
+            padding: 40px;
+            transition: 0.4s;
+        }
+
+        /* TOP NAV */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .user-pill {
+            background: var(--white);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .user-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* DRAWER MODERNO */
+        #profileDrawer {
+            position: fixed;
+            right: -450px;
+            top: 15px;
+            bottom: 15px;
+            width: 380px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 30px 0 0 30px;
+            z-index: 2000;
+            transition: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            padding: 40px;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .info-group {
+            background: rgba(255,255,255,0.6);
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            border: 1px solid white;
+        }
+
+        .info-group label {
+            font-size: 0.65rem;
+            color: var(--primary);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .info-group p { margin: 5px 0 0 0; font-weight: 600; }
+
+        /* CARDS */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            align-items: start;
+        }
+
+        .restaurante-card {
+            background: var(--white);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: 0.4s ease;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .restaurante-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .badge-time {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: var(--white);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .btn-menu {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            background: var(--text-main);
+            color: white;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-menu:hover { background: var(--primary); }
+
+        .btn-logout { color: #ff4757 !important; margin-top: auto; }
+        .btn-logout:hover { background: #fff2f2 !important; }
+
+        /* --- NUEVOS ESTILOS PARA EL CRUD DE PEDIDOS --- */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-prep { background: #fff4e6; color: #d9480f; } /* Naranja */
+        .status-way { background: #e7f5ff; color: #1971c2; }  /* Azul */
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--white);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+        }
+        .order-item:hover { 
+            transform: translateX(10px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-edit { background: #f1f2f6; color: var(--text-main); }
+        .btn-delete { background: #fff2f2; color: #ff4757; }
+        .btn-edit:hover { background: #e2e2e2; }
+        .btn-delete:hover { background: #ff4757; color: white; }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div style="margin-bottom: 40px; color: var(--primary); font-size: 1.5rem;">
+            <i class="fas fa-bolt"></i>
+        </div>
+        <a href="#" class="sidebar-item active">
+            <i class="fas fa-home"></i> <span>Explorar</span>
+        </a>
+        <a href="#" class="sidebar-item">
+            <i class="fas fa-utensils"></i> <span>Mis Pedidos</span>
+        </a>
+        <a href="#" class="sidebar-item">
+            <i class="fas fa-heart"></i> <span>Favoritos</span>
+        </a>
+        <a href="#" class="sidebar-item">
+            <i class="fas fa-wallet"></i> <span>Billetera</span>
+        </a>
+        
+        <a href="{% url 'cerrar_sesion' %}" class="sidebar-item btn-logout">
+            <i class="fas fa-power-off"></i> <span>Cerrar Sesión</span>
+        </a>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-nav">
+            <div>
+                <h1 style="margin:0; font-size: 1.8rem;">¡Hola, {{ user.nombre }}! 👋</h1>
+                <p style="color: var(--text-muted); margin: 5px 0 0 0;">¿Qué vamos a pedir hoy?</p>
+            </div>
+            
+            <div class="user-pill" onclick="toggleDrawer()">
+                <div style="text-align: right;">
+                    <span style="display: block; font-size: 0.85rem; font-weight: 800;">{{ user.username }}</span>
+                    <span style="display: block; font-size: 0.7rem; color: var(--primary);">Mi Perfil</span>
+                </div>
+                <div class="avatar">{{ user.nombre|slice:":1"|upper }}</div>
+            </div>
+        </header>
+
+        <section style="margin-bottom: 50px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.3rem; margin: 0;">Mis Pedidos Activos</h2>
+                <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700;">{{ pedidos|length|default:"2" }} PEDIDOS</span>
+            </div>
+
+            <div id="orders-container">
+                <div class="order-item" id="order-101">
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <div style="width: 60px; height: 60px; background: #fff4e6; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-hamburger" style="color: var(--primary); font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1rem;">La Burguesía</h4>
+                            <p style="margin: 4px 0; font-size: 0.8rem; color: var(--text-muted);">1x Doble Carne + Papas</p>
+                            <span class="status-badge status-prep">En preparación</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <div style="text-align: right; margin-right: 10px;">
+                            <p style="margin: 0; font-weight: 800;">$45.000</p>
+                            <p style="margin: 0; font-size: 0.7rem; color: var(--text-muted);">ID #101</p>
+                        </div>
+                        <button onclick="editOrder('101')" class="btn-action btn-edit" title="Editar Pedido">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button onclick="deleteOrder('101')" class="btn-action btn-delete" title="Cancelar Pedido">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="order-item" id="order-102">
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <div style="width: 60px; height: 60px; background: #e7f5ff; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-motorcycle" style="color: #1971c2; font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1rem;">Sakura Sushi</h4>
+                            <p style="margin: 4px 0; font-size: 0.8rem; color: var(--text-muted);">2x Philadelphia Roll</p>
+                            <span class="status-badge status-way">En camino</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <div style="text-align: right; margin-right: 10px;">
+                            <p style="margin: 0; font-weight: 800;">$32.500</p>
+                            <p style="margin: 0; font-size: 0.7rem; color: var(--text-muted);">ID #102</p>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: #ddd;"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="font-size: 1.3rem;">Restaurantes Populares</h2>
+                <button style="background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer;">Ver todos</button>
+            </div>
+
+            <div class="card-container">
+                <div class="restaurante-card">
+                    <div style="height: 180px; background: url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500') center/cover; position: relative;">
+                        <div class="badge-time">
+                            <i class="fas fa-clock" style="color: var(--primary);"></i> 25-35 min
+                        </div>
+                    </div>
+                    <div style="padding: 25px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">La Burguesía</h3>
+                            <span style="font-weight: 700;"><i class="fas fa-star" style="color: #f1c40f;"></i> 4.9</span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Hamburguesas • Gourmet • Parrilla</p>
+                        <button class="btn-menu">Explorar Menú</button>
+                    </div>
+                </div>
+
+                <div class="restaurante-card">
+                    <div style="height: 180px; background: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=500') center/cover; position: relative;">
+                        <div class="badge-time">
+                            <i class="fas fa-clock" style="color: var(--primary);"></i> 15-25 min
+                        </div>
+                    </div>
+                    <div style="padding: 25px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">Tacontento</h3>
+                            <span style="font-weight: 700;"><i class="fas fa-star" style="color: #f1c40f;"></i> 4.7</span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Tacos • Burritos • Picante</p>   
+                        <button class="btn-menu">Explorar Menú</button>
+                    </div>
+                </div>
+
+                <div class="restaurante-card">
+                    <div style="height: 180px; background: url('https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=500') center/cover; position: relative;">
+                        <div class="badge-time">
+                            <i class="fas fa-clock" style="color: var(--primary);"></i> 30-45 min
+                        </div>
+                    </div>
+                    <div style="padding: 25px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">Sakura Sushi</h3>
+                            <span style="font-weight: 700;"><i class="fas fa-star" style="color: #f1c40f;"></i> 4.9</span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Japonés • Rollos • Saludable</p>
+                        <button class="btn-menu">Explorar Menú</button>
+                    </div>
+                </div>
+
+                <div class="restaurante-card">
+                    <div style="height: 180px; background: url('https://images.unsplash.com/photo-1626645738196-c2a7c8d38f58?q=80&w=1000&auto=format&fit=crop') center/cover; position: relative;">
+                        <div class="badge-time">
+                            <i class="fas fa-clock" style="color: var(--primary);"></i> 20-30 min
+                        </div>
+                    </div>
+                    <div style="padding: 25px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0; font-size: 1.1rem;">Pollos El Gran</h3>
+                            <span style="font-weight: 700;"><i class="fas fa-star" style="color: #f1c40f;"></i> 4.5</span>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Asado • Familiar • Combos</p>
+                        <button class="btn-menu">Explorar Menú</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="profileDrawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;">
+            <h2 style="margin: 0;">Mi Cuenta</h2>
+            <div onclick="toggleDrawer()" style="cursor: pointer; width: 35px; height: 35px; border-radius: 50%; background: rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+
+        <div class="info-group">
+            <label>CLIENTE</label>
+            <p>{{ datos.nombre }} {{ datos.apellido }}</p>
+        </div>
+
+        <div class="info-group">
+            <label>CONTACTO</label>
+            <p><i class="fas fa-phone" style="font-size: 0.8rem; margin-right: 8px;"></i> {{ datos.telefono }}</p>
+        </div>
+
+        <div class="info-group">
+            <label>CORREO ELECTRÓNICO</label>
+            <p>{{ datos.email }}</p>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 12px;">
+            <button style="width: 100%; padding: 15px; border: none; background: var(--primary); color: white; border-radius: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(255,107,53,0.2);">
+                Editar Perfil
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('profileDrawer');
+            drawer.style.right = (drawer.style.right === '15px') ? '-450px' : '15px';
+        }
+
+        // --- FUNCIONES CRUD PEDIDOS ---
+
+        function deleteOrder(id) {
+            if(confirm('¿Seguro que quieres cancelar el pedido #' + id + '?')) {
+                const orderElement = document.getElementById('order-' + id);
+                orderElement.style.opacity = '0';
+                orderElement.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    orderElement.remove();
+                }, 300);
+            }
+        }
+
+        function editOrder(id) {
+            alert('Abriendo editor para el pedido #' + id + '... (Aquí conectarás tu formulario de edición)');
+            // En el futuro, aquí puedes abrir un modal para cambiar ingredientes o cantidades.
+        }
+    </script>
+</body>
+</html>
