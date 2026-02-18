@@ -25,16 +25,16 @@ El sistema cuenta con Dos roles principales: **Cliente**, **Empresa**, cada uno 
 - 🛠️ **Panel de administración** — Dashboard / Panel de control
 
 ## 🚀 Instalacion
-```
-1.Clona el repositorio :
+```bash
+# 1.Clona el repositorio :
 Con el comando git clone https://github.com/tu-usuario/delideliver.git
 
-2.Ahora crearas un entorno virtual y activarlo :
+# 2.Ahora crearas un entorno virtual y activarlo :
 python -m venv venv
 source venv/bin/activate # Linux/Mac
 venv\Scripts\activate # Windows
 
-3.Ahora instalaras dependencias : 
+# 3.Ahora instalaras dependencias : 
 pip install -r requirements.txt
 
 4.
